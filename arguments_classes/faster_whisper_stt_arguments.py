@@ -4,11 +4,11 @@ from dataclasses import dataclass, field
 @dataclass
 class FasterWhisperSTTHandlerArguments:
     faster_whisper_stt_model_name: str = field(
-        default="tiny.en",
+        default="large-v3-turbo",
         metadata={
             "help": """The pretrained Faster Whisper model to use.
-            One of ('tiny', 'tiny.en', 'base', 'base.en', 'small', 'small.en', 'distil-small.en', 'medium', 'medium.en', 'distil-medium.en', 'large-v1', 'large-v2', 'large-v3', 'large', 'distil-large-v2', 'distil-large-v3').
-            Default is 'small'."""
+            One of ('tiny', 'tiny.en', 'base', 'base.en', 'small', 'small.en', 'distil-small.en', 'medium', 'medium.en', 'distil-medium.en', 'large-v1', 'large-v2', 'large-v3', 'large', 'distil-large-v2', 'distil-large-v3', 'large-v3-turbo').
+            Default is 'large-v3-turbo'."""
         },
     )
     faster_whisper_stt_device: str = field(

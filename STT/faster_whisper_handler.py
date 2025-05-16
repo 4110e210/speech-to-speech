@@ -7,6 +7,8 @@ from rich.console import Console
 
 from baseHandler import BaseHandler
 
+from opencc import OpenCC
+
 console = Console()
 
 logger = logging.getLogger(__name__)
@@ -19,12 +21,14 @@ class FasterWhisperSTTHandler(BaseHandler):
 
     def setup(
         self,
-        model_name: str = "tiny.en",
+        model_name: str = "large-v3-turbo", #"asadfgglie/faster-whisper-large-v3-zh-TW", "small",
         device: str = "auto",
         compute_type: str = "auto",
+        s2tw = False,
         gen_kwargs={},
     ):
         self.gen_kwargs = self.adapt_gen_kwargs(gen_kwargs)
+        self.s2tw = s2tw, # C.T.Lin
 
         os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
         self.model = WhisperModel(model_name, device=device, compute_type=compute_type)
@@ -46,6 +50,10 @@ class FasterWhisperSTTHandler(BaseHandler):
 
         pred_text = " ".join(output_text).strip()
 
+        if self.s2tw == True: # C.T.Lin
+            cc = OpenCC('s2tw')
+            pred_text = cc.convert(pred_text)
+
         logger.debug("finished whisper inference")
         if pred_text:
             console.print(f"[yellow]USER: {pred_text}")
@@ -60,5 +68,6 @@ class FasterWhisperSTTHandler(BaseHandler):
 
     def adapt_gen_kwargs(self, gen_kwargs: dict):
         gen_kwargs["without_timestamps"] = not gen_kwargs.pop("return_timestamps", True)
+        # gen_kwargs["initial_prompt"] = f"這是有關中文翻譯的對話，主題包括生成式 AI, ChatGPT, Claude AI, Prompt, Taiwan"
 
         return gen_kwargs

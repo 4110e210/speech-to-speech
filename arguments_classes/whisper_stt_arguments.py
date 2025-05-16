@@ -52,7 +52,7 @@ class WhisperSTTHandlerArguments:
             "help": "The task to perform, typically 'transcribe' for transcription. Default is 'transcribe'."
         },
     )
-    language: Optional[str] = field(
+    stt_language: Optional[str] = field(
         default='en',
         metadata={
             "help": """The language for the conversation. 

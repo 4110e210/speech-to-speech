@@ -63,20 +63,24 @@ class MeloTTSHandler(BaseHandler):
 
         console.print(f"[green]ASSISTANT: {llm_sentence}")
 
-        if language_code is not None and self.language != language_code:
-            try:
-                self.model = TTS(
-                    language=WHISPER_LANGUAGE_TO_MELO_LANGUAGE[language_code],
-                    device=self.device,
-                )
-                self.speaker_id = self.model.hps.data.spk2id[
-                    WHISPER_LANGUAGE_TO_MELO_SPEAKER[language_code]
-                ]
-                self.language = language_code
-            except KeyError:
-                console.print(
-                    f"[red]Language {language_code} not supported by Melo. Using {self.language} instead."
-                )
+        if language_code is not None and self.language != language_code: # revised by C.T.Lin
+            logger.info(f"Switching language from {self.language} to {language_code}")
+        else:
+            language_code = self.language
+
+        logger.info(f"Process {self.__class__.__name__}: self.language: {self.language}; language_code: {language_code}")
+        try:
+            self.model = TTS(
+                language=WHISPER_LANGUAGE_TO_MELO_LANGUAGE[language_code],
+                device=self.device,
+            )
+            self.speaker_id = self.model.hps.data.spk2id[
+                WHISPER_LANGUAGE_TO_MELO_SPEAKER[language_code]
+            ]
+        except KeyError:
+            console.print(
+                f"[red]Language {language_code} not supported by Melo. Using {self.language} instead."
+            )
 
         if self.device == "mps":
             import time

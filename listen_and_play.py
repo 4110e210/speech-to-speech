@@ -86,6 +86,7 @@ def listen_and_play(
     try:
         send_stream = sd.RawInputStream(
             samplerate=send_rate,
+            # device='seeed-2mic-voicecard', # C.T.Lin, for raspi soundcard
             channels=1,
             dtype="int16",
             blocksize=list_play_chunk_size,

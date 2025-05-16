@@ -7,6 +7,8 @@ import numpy as np
 from rich.console import Console
 import torch
 
+from opencc import OpenCC
+
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
@@ -26,6 +28,7 @@ class ParaformerSTTHandler(BaseHandler):
         self,
         model_name="paraformer-zh",
         device="cuda",
+        s2tw = False,
         gen_kwargs={},
     ):
         print(model_name)
@@ -33,6 +36,7 @@ class ParaformerSTTHandler(BaseHandler):
             model_name = model_name.split("/")[-1]
         self.device = device
         self.model = AutoModel(model=model_name, device=device)
+        self.s2tw = s2tw, # C.T.Lin
         self.warmup()
 
     def warmup(self):
@@ -53,9 +57,16 @@ class ParaformerSTTHandler(BaseHandler):
         pred_text = (
             self.model.generate(spoken_prompt)[0]["text"].strip().replace(" ", "")
         )
-        torch.mps.empty_cache()
+        
+        if self.device == "cuda":
+            torch.cuda.empty_cache()
+        else:
+            torch.mps.empty_cache()
 
         logger.debug("finished paraformer inference")
+        if self.s2tw == True:
+            cc = OpenCC('s2tw')
+            pred_text = cc.convert(pred_text)
         console.print(f"[yellow]USER: {pred_text}")
 
         yield pred_text

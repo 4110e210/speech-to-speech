@@ -12,12 +12,16 @@ services:
       - 0.0.0.0 
       - --send_host 
       - 0.0.0.0 
-      - --device
-      - cuda
-      - --stt
-      - paraformer
-      - --llm
-      - translate
+      - --lm_model_name 
+      - microsoft/Phi-3-mini-4k-instruct 
+      - --init_chat_role 
+      - system
+      - --init_chat_prompt
+      - "You are a helpful assistant"
+      - --stt_compile_mode 
+      - reduce-overhead 
+      - --tts_compile_mode 
+      - default
     expose:
       - 12345/tcp
       - 12346/tcp

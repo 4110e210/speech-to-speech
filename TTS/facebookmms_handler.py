@@ -62,7 +62,7 @@ class FacebookMMSTTSHandler(BaseHandler):
         should_listen,
         device="cuda",
         torch_dtype="float32",
-        language="en",
+        tts_language="en", # C.T.Lin
         stream=True,
         chunk_size=512,
         **kwargs
@@ -72,7 +72,7 @@ class FacebookMMSTTSHandler(BaseHandler):
         self.torch_dtype = getattr(torch, torch_dtype)
         self.stream = stream
         self.chunk_size = chunk_size
-        self.language = language
+        self.language = tts_language # C.T.Lin
 
         self.load_model(self.language)
         self.warmup()
@@ -133,13 +133,17 @@ class FacebookMMSTTSHandler(BaseHandler):
         logger.debug(f"Processing text: {llm_sentence}")
         logger.debug(f"Language code: {language_code}")
 
-        if language_code is not None and self.language != language_code:
-            try:
-                logger.info(f"Switching language from {self.language} to {language_code}")
-                self.load_model(language_code)
-            except KeyError:
-                console.print(f"[red]Language {language_code} not supported by Facebook MMS. Using {self.language} instead.")
-                logger.warning(f"Unsupported language: {language_code}")
+        if language_code is not None and self.language != language_code: # revised by C.T.Lin
+            logger.info(f"Switching language from {self.language} to {language_code}")
+        else:
+            language_code = self.language
+
+        logger.debug(f"Process {self.__class__.__name__}: self.language: {self.language}; language_code: {language_code}")
+        try:
+            self.load_model(language_code)
+        except KeyError:
+            console.print(f"[red]Language {language_code} not supported by Facebook MMS. Using {self.language} instead.")
+            logger.warning(f"Unsupported language: {language_code}")
 
         audio_output = self.generate_audio(llm_sentence)
         

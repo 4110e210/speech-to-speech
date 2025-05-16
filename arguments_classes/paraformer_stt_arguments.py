@@ -15,3 +15,9 @@ class ParaformerSTTHandlerArguments:
             "help": "The device type on which the model will run. Default is 'cuda' for GPU acceleration."
         },
     )
+    paraformer_stt_s2tw: bool = field(
+        default=False,
+        metadata={
+            "help": "ASR in Traditional Chinese or Simplified Chinese. Default is False for showing in Simplified Chinese."
+        },
+    )
